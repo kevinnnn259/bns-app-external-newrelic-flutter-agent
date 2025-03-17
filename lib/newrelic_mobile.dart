@@ -40,12 +40,10 @@ class NewrelicMobile {
       FlutterError.onError = NewrelicMobile.onError;
       await NewrelicMobile.instance.startAgent(config);
       runApp();
-      await NewrelicMobile.instance
-          .setAttribute("Flutter Agent Version", "1.1.8");
+      await NewrelicMobile.instance.setAttribute("Flutter Agent Version", "1.1.8");
     }, (Object error, StackTrace stackTrace) {
       NewrelicMobile.instance.recordError(error, stackTrace);
-      FlutterError.presentError(
-          FlutterErrorDetails(exception: error, stack: stackTrace));
+      FlutterError.presentError(FlutterErrorDetails(exception: error, stack: stackTrace));
     }, zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {
       if (config.printStatementAsEventsEnabled) {
         logInfo(line);
@@ -65,12 +63,10 @@ class NewrelicMobile {
 
   static void onError(FlutterErrorDetails errorDetails) async {
     FlutterError.presentError(errorDetails);
-    NewrelicMobile.instance
-        .recordError(errorDetails.exception, errorDetails.stack, isFatal: true);
+    NewrelicMobile.instance.recordError(errorDetails.exception, errorDetails.stack, isFatal: true);
   }
 
-  void recordError(Object error, StackTrace? stackTrace,
-      {Map<String, dynamic>? attributes, bool isFatal = false}) async {
+  void recordError(Object error, StackTrace? stackTrace, {Map<String, dynamic>? attributes, bool isFatal = false}) async {
     String stackTraceStr = '';
     if (stackTrace != null) {
       if (stackTrace.toString().length > 4096) {
@@ -80,14 +76,7 @@ class NewrelicMobile {
       }
     }
 
-    final Map<String, dynamic> params = <String, dynamic>{
-      'exception': error.toString(),
-      'reason': error.toString(),
-      'stackTrace': stackTraceStr,
-      'stackTraceElements':
-          stackTrace != null ? getStackTraceElements(stackTrace) : null,
-      'fatal': isFatal
-    };
+    final Map<String, dynamic> params = <String, dynamic>{'exception': error.toString(), 'reason': error.toString(), 'stackTrace': stackTraceStr, 'stackTraceElements': stackTrace != null ? getStackTraceElements(stackTrace) : null, 'fatal': isFatal};
 
     if (attributes != null) {
       params['attributes'] = attributes;
@@ -105,8 +94,7 @@ class NewrelicMobile {
     eventParams.remove('stackTraceElements');
     eventParams.remove('attributes');
 
-    NewrelicMobile.instance
-        .recordCustomEvent("Mobile Dart Errors", eventAttributes: eventParams);
+    NewrelicMobile.instance.recordCustomEvent("Mobile Dart Errors", eventAttributes: eventParams);
 
     await _channel.invokeMethod('recordError', params);
   }
@@ -147,8 +135,7 @@ class NewrelicMobile {
     redirectDebugPrint();
     this.config = config;
     if (config.httpInstrumentationEnabled) {
-      HttpOverrides.global =
-          NewRelicHttpOverrides(current: HttpOverrides.current);
+      HttpOverrides.global = NewRelicHttpOverrides(current: HttpOverrides.current);
     }
     await _channel.invokeMethod('startAgent', params);
   }
@@ -162,44 +149,30 @@ class NewrelicMobile {
   }
 
   Future<bool> setAttribute(String name, dynamic value) async {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'name': name,
-      'value': value
-    };
+    final Map<String, dynamic> params = <String, dynamic>{'name': name, 'value': value};
     final bool result = await _channel.invokeMethod('setAttribute', params);
     return result;
   }
 
   Future<bool> removeAttribute(String name) async {
     final Map<String, dynamic> params = <String, dynamic>{'name': name};
-    final bool attributeIsRemoved =
-        await _channel.invokeMethod('removeAttribute', params);
+    final bool attributeIsRemoved = await _channel.invokeMethod('removeAttribute', params);
     return attributeIsRemoved;
   }
 
   Future<bool> incrementAttribute(String name, {double? value}) async {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'name': name,
-      'value': value
-    };
-    final bool attributeIsIncreased =
-        await _channel.invokeMethod('incrementAttribute', params);
+    final Map<String, dynamic> params = <String, dynamic>{'name': name, 'value': value};
+    final bool attributeIsIncreased = await _channel.invokeMethod('incrementAttribute', params);
     return attributeIsIncreased;
   }
 
-  Future<bool> recordBreadcrumb(String name,
-      {Map<String, dynamic>? eventAttributes}) async {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'name': name,
-      'eventAttributes': eventAttributes
-    };
-    final bool eventRecorded =
-        await _channel.invokeMethod('recordBreadcrumb', params);
+  Future<bool> recordBreadcrumb(String name, {Map<String, dynamic>? eventAttributes}) async {
+    final Map<String, dynamic> params = <String, dynamic>{'name': name, 'eventAttributes': eventAttributes};
+    final bool eventRecorded = await _channel.invokeMethod('recordBreadcrumb', params);
     return eventRecorded;
   }
 
-  Future<void> recordMetric(String name, String category,
-      {double? value, MetricUnit? countUnit, MetricUnit? valueUnit}) async {
+  Future<void> recordMetric(String name, String category, {double? value, MetricUnit? countUnit, MetricUnit? valueUnit}) async {
     final Map<String, dynamic> params = <String, dynamic>{
       'name': name,
       'category': category,
@@ -219,31 +192,20 @@ class NewrelicMobile {
     return await _channel.invokeMethod('currentSessionId');
   }
 
-  Future<bool> recordCustomEvent(String eventType,
-      {String eventName = "", Map<String, dynamic>? eventAttributes}) async {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'eventType': eventType,
-      'eventName': eventName,
-      'eventAttributes': eventAttributes
-    };
-    final bool eventRecorded =
-        await _channel.invokeMethod('recordCustomEvent', params);
+  Future<bool> recordCustomEvent(String eventType, {String eventName = "", Map<String, dynamic>? eventAttributes}) async {
+    final Map<String, dynamic> params = <String, dynamic>{'eventType': eventType, 'eventName': eventName, 'eventAttributes': eventAttributes};
+    final bool eventRecorded = await _channel.invokeMethod('recordCustomEvent', params);
     return eventRecorded;
   }
 
   Future<String> startInteraction(String actionName) async {
-    final Map<String, String> params = <String, String>{
-      'actionName': actionName
-    };
-    final String interactionId =
-        await _channel.invokeMethod('startInteraction', params);
+    final Map<String, String> params = <String, String>{'actionName': actionName};
+    final String interactionId = await _channel.invokeMethod('startInteraction', params);
     return interactionId;
   }
 
   void addHTTPHeadersTrackingFor(List<String> headers) async {
-    final Map<String, List<String>> params = <String, List<String>>{
-      'headers': headers
-    };
+    final Map<String, List<String>> params = <String, List<String>>{'headers': headers};
 
     await _channel.invokeMethod('addHTTPHeadersTrackingFor', params);
   }
@@ -252,18 +214,14 @@ class NewrelicMobile {
     return await _channel.invokeMethod('getHTTPHeadersTrackingFor');
   }
 
-  Future<Map<String, dynamic>> noticeDistributedTrace(
-      Map<String, dynamic> requestAttributes) async {
-    final dynamic traceAttributes =
-        await _channel.invokeMethod('noticeDistributedTrace');
+  Future<Map<String, dynamic>> noticeDistributedTrace(Map<String, dynamic> requestAttributes) async {
+    final dynamic traceAttributes = await _channel.invokeMethod('noticeDistributedTrace');
 
     return Map<String, dynamic>.from(traceAttributes);
   }
 
   Future<void> setInteractionName(String interactionName) async {
-    final Map<String, String> params = <String, String>{
-      'interactionName': interactionName
-    };
+    final Map<String, String> params = <String, String>{'interactionName': interactionName};
     if (PlatformManager.instance.isAndroid()) {
       await _channel.invokeMethod('setInteractionName', params);
       return;
@@ -285,75 +243,35 @@ class NewrelicMobile {
   }
 
   Future<void> setMaxEventBufferTime(int maxBufferTimeInSec) async {
-    final Map<String, int> params = <String, int>{
-      'maxBufferTimeInSec': maxBufferTimeInSec
-    };
+    final Map<String, int> params = <String, int>{'maxBufferTimeInSec': maxBufferTimeInSec};
     await _channel.invokeMethod('setMaxEventBufferTime', params);
     return;
   }
 
   void endInteraction(String interactionId) async {
-    final Map<String, String> params = <String, String>{
-      'interactionId': interactionId
-    };
+    final Map<String, String> params = <String, String>{'interactionId': interactionId};
 
     await _channel.invokeMethod('endInteraction', params);
     return;
   }
 
-  Future<void> noticeHttpTransaction(
-      String url,
-      String httpMethod,
-      int statusCode,
-      int startTime,
-      int endTime,
-      int bytesSent,
-      int bytesReceived,
-      Map<String, dynamic>? traceData,
-      {Map<String, dynamic>? httpParams,
-      String responseBody = ""}) async {
+  Future<void> noticeHttpTransaction(String url, String httpMethod, int statusCode, int startTime, int endTime, int bytesSent, int bytesReceived, Map<String, dynamic>? traceData, {Map<String, dynamic>? httpParams, String responseBody = ""}) async {
     Map<String, dynamic>? traceAttributes;
     if (config!.distributedTracingEnabled) {
       if (traceData != null) {
         if (PlatformManager.instance.isAndroid()) {
-          traceAttributes = {
-            DTTraceTags.id: traceData[DTTraceTags.id],
-            DTTraceTags.guid: traceData[DTTraceTags.guid],
-            DTTraceTags.traceId: traceData[DTTraceTags.traceId]
-          };
+          traceAttributes = {DTTraceTags.id: traceData[DTTraceTags.id], DTTraceTags.guid: traceData[DTTraceTags.guid], DTTraceTags.traceId: traceData[DTTraceTags.traceId]};
         } else if (PlatformManager.instance.isIOS()) {
-          traceAttributes = {
-            DTTraceTags.traceParent: traceData[DTTraceTags.traceParent],
-            DTTraceTags.traceState: traceData[DTTraceTags.traceState],
-            DTTraceTags.newrelic: traceData[DTTraceTags.newrelic]
-          };
+          traceAttributes = {DTTraceTags.traceParent: traceData[DTTraceTags.traceParent], DTTraceTags.traceState: traceData[DTTraceTags.traceState], DTTraceTags.newrelic: traceData[DTTraceTags.newrelic]};
         }
       }
     }
-    final Map<String, dynamic> params = <String, dynamic>{
-      'url': url,
-      'httpMethod': httpMethod,
-      'statusCode': statusCode,
-      'startTime': startTime,
-      'endTime': endTime,
-      'bytesSent': bytesSent != -1 ? bytesSent : 0,
-      'bytesReceived': bytesReceived != -1 ? bytesReceived : 0,
-      'responseBody': responseBody,
-      'traceAttributes': traceAttributes,
-      'params': httpParams
-    };
+    final Map<String, dynamic> params = <String, dynamic>{'url': url, 'httpMethod': httpMethod, 'statusCode': statusCode, 'startTime': startTime, 'endTime': endTime, 'bytesSent': bytesSent != -1 ? bytesSent : 0, 'bytesReceived': bytesReceived != -1 ? bytesReceived : 0, 'responseBody': responseBody, 'traceAttributes': traceAttributes, 'params': httpParams};
     return await _channel.invokeMethod('noticeHttpTransaction', params);
   }
 
-  Future<void> noticeNetworkFailure(String url, String httpMethod,
-      int startTime, int endTime, NetworkFailure errorCode) async {
-    final Map<String, dynamic> params = <String, dynamic>{
-      'url': url,
-      'httpMethod': httpMethod,
-      'startTime': startTime,
-      'endTime': endTime,
-      'errorCode': errorCode.code
-    };
+  Future<void> noticeNetworkFailure(String url, String httpMethod, int startTime, int endTime, NetworkFailure errorCode) async {
+    final Map<String, dynamic> params = <String, dynamic>{'url': url, 'httpMethod': httpMethod, 'startTime': startTime, 'endTime': endTime, 'errorCode': errorCode.code};
     return await _channel.invokeMethod('noticeNetworkFailure', params);
   }
 
@@ -362,10 +280,7 @@ class NewrelicMobile {
       print("Log message is empty.");
       return;
     }
-    Map<String, dynamic> attributes = <String, dynamic>{
-      Platform.isAndroid ? "level" : "logLevel": logLevel.name,
-      "message": message
-    };
+    Map<String, dynamic> attributes = <String, dynamic>{Platform.isAndroid ? "level" : "logLevel": logLevel.name, "message": message};
 
     logAttributes(attributes);
     return;
@@ -422,8 +337,7 @@ class NewrelicMobile {
     await _channel.invokeMethod('crashNow', params);
   }
 
-  static List<Map<String, String>> getStackTraceElements(
-      StackTrace stackTrace) {
+  static List<Map<String, String>> getStackTraceElements(StackTrace stackTrace) {
     final Trace trace = Trace.parseVM(stackTrace.toString());
     final List<Map<String, String>> elements = <Map<String, String>>[];
 
